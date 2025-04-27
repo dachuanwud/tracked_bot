@@ -7,6 +7,7 @@ log/
 .vscode
 .idea
 *.sw?
+.cursor/
 
 # 临时生成的tf树文件
 frames_*.gv
