@@ -1,0 +1,245 @@
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="tracked_bot_flipper">
+
+    <!-- Robot Parameters -->
+    <xacro:property name="flipper_x_offset" value="0.145" />
+    <xacro:property name="front_flipper_x_offset" value="-0.0035" />
+    <xacro:property name="flipper_y_offset" value="0.18" />
+    <xacro:property name="track_y_offset" value="0.11" />
+    <xacro:property name="flipper_mass" value="1.2" />
+    <xacro:property name="chassis_mass" value="6.5" />
+    <xacro:property name="track_mass" value="1.5" />
+
+    <!-- Part Includes - Payload, Sensors, Etc.. -->
+    <xacro:property name="payload_z_offset" value="0.096" />
+    <xacro:include filename="$(find tracked_bot_description)/urdf/accessories/rover_dev_payload.urdf" />
+
+    <!-- Robot Definition -->
+    <link name="base_link" />
+
+    <link name="chassis_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="1.57 -0 1.57" />
+            <geometry>
+                <mesh filename="file://$(find tracked_bot_description)/meshes/flipper_chassis.dae"/>
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="1.57 -0 1.57" />
+            <geometry>
+                <mesh filename="file://$(find tracked_bot_description)/meshes/flipper_chassis.dae"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <mass value="${chassis_mass}" />
+            <inertia ixx="0.028" ixy="0.0" ixz="0.0" iyy="0.082" iyz="0.0" izz="0.103" />
+        </inertial>
+    </link>
+
+    <joint name="base_to_chassis" type="fixed">
+        <parent link="base_link"/>
+        <child link="chassis_link"/>
+        <origin xyz="0 0 0.05"/>
+    </joint>
+
+    <link name="left_track_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="1.57 3.1415 0" />
+            <geometry>
+                <mesh filename="file://$(find tracked_bot_description)/meshes/flipper_track.dae"/>
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="1.57 3.1415 0" />
+            <geometry>
+                <mesh filename="file://$(find tracked_bot_description)/meshes/flipper_track.dae"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <mass value="${track_mass}" />
+            <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01" />
+        </inertial>
+    </link>
+    <joint name="left_track_to_chassis" type="fixed">
+        <parent link="chassis_link"/>
+        <child link="left_track_link"/>
+        <origin xyz="0 ${track_y_offset} 0"/>
+    </joint>
+
+    <link name="right_track_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="1.57 3.1415 0" />
+            <geometry>
+                <mesh filename="file://$(find tracked_bot_description)/meshes/flipper_track.dae"/>
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="1.57 3.1415 0" />
+            <geometry>
+                <mesh filename="file://$(find tracked_bot_description)/meshes/flipper_track.dae"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <mass value="${track_mass}" />
+            <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01" />
+        </inertial>
+    </link>
+    <joint name="right_track_to_chassis" type="fixed">
+        <parent link="chassis_link"/>
+        <child link="right_track_link"/>
+        <origin xyz="0 ${-track_y_offset} 0"/>
+    </joint>
+
+    <link name="fr_flipper_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="-1.57 0 1.57" />
+            <geometry>
+                <mesh filename="file://$(find tracked_bot_description)/meshes/flipper.dae"/>
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="-1.57 0 1.57" />
+            <geometry>
+                <mesh filename="file://$(find tracked_bot_description)/meshes/flipper.dae"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <origin xyz="0 0.01 0" rpy="0 0 0" />
+            <mass value="${flipper_mass}" />
+            <inertia ixx="0.0017" ixy="0.0" ixz="0.0" iyy="0.0029" iyz="0.0" izz="0.0017" />
+        </inertial>
+    </link>
+    <joint name="fr_flipper_to_chassis" type="fixed">
+        <parent link="chassis_link"/>
+        <child link="fr_flipper_link"/>
+        <origin xyz="${flipper_x_offset + front_flipper_x_offset} ${-flipper_y_offset} 0" rpy="0 -0.4 0"/>
+    </joint>
+
+    <link name="fl_flipper_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="1.57 0 -1.57" />
+            <geometry>
+                <mesh filename="file://$(find tracked_bot_description)/meshes/flipper.dae"/>
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="1.57 0 -1.57" />
+            <geometry>
+                <mesh filename="file://$(find tracked_bot_description)/meshes/flipper.dae"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <origin xyz="0 -0.01 0" rpy="0 0 0" />
+            <mass value="${flipper_mass}" />
+            <inertia ixx="0.0017" ixy="0.0" ixz="0.0" iyy="0.0029" iyz="0.0" izz="0.0017" />
+        </inertial>
+    </link>
+    <joint name="fl_flipper_to_chassis" type="fixed">
+        <parent link="chassis_link"/>
+        <child link="fl_flipper_link"/>
+        <origin xyz="${flipper_x_offset + front_flipper_x_offset} ${flipper_y_offset} 0" rpy="0 -0.4 0"/>
+    </joint>
+
+    <link name="br_flipper_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="1.29 0 1.57" />
+            <geometry>
+                <mesh filename="file://$(find tracked_bot_description)/meshes/flipper.dae"/>
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="1.29 0 1.57" />
+            <geometry>
+                <mesh filename="file://$(find tracked_bot_description)/meshes/flipper.dae"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <origin xyz="0 0.01 0" rpy="0 0 0" />
+            <mass value="${flipper_mass}" />
+            <inertia ixx="0.0017" ixy="0.0" ixz="0.0" iyy="0.0029" iyz="0.0" izz="0.0017" />
+        </inertial>
+    </link>
+    <joint name="br_flipper_to_chassis" type="fixed">
+        <parent link="chassis_link"/>
+        <child link="br_flipper_link"/>
+        <origin xyz="${-flipper_x_offset} ${-flipper_y_offset} 0"/>
+    </joint>
+
+    <link name="bl_flipper_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="-1.29 0 -1.57" />
+            <geometry>
+                <mesh filename="file://$(find tracked_bot_description)/meshes/flipper.dae"/>
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="-1.29 0 -1.57" />
+            <geometry>
+                <mesh filename="file://$(find tracked_bot_description)/meshes/flipper.dae"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <origin xyz="0 -0.01 0" rpy="0 0 0" />
+            <mass value="${flipper_mass}" />
+            <inertia ixx="0.0017" ixy="0.0" ixz="0.0" iyy="0.0029" iyz="0.0" izz="0.0017" />
+        </inertial>
+    </link>
+    <joint name="bl_flipper_to_chassis" type="fixed">
+        <parent link="chassis_link"/>
+        <child link="bl_flipper_link"/>
+        <origin xyz="${-flipper_x_offset} ${flipper_y_offset} 0"/>
+    </joint>
+
+    <!-- Gazebo Plugins -->
+    <gazebo>
+        <plugin name="ignition::gazebo::systems::DiffDrive" filename="ignition-gazebo-diff-drive-system">
+            <left_joint>left_track_to_chassis</left_joint>
+            <right_joint>right_track_to_chassis</right_joint>
+            <wheel_separation>0.22</wheel_separation>
+            <wheel_radius>0.05</wheel_radius>
+            <odom_publish_frequency>50</odom_publish_frequency>
+            <topic>/cmd_vel</topic>
+            <odom_topic>/odom</odom_topic>
+            <frame_id>odom</frame_id>
+            <child_frame_id>base_link</child_frame_id>
+            <tf_topic>/tf</tf_topic>
+        </plugin>
+    </gazebo>
+
+    <gazebo reference="chassis_link">
+        <material>Gazebo/Grey</material>
+    </gazebo>
+    <gazebo reference="left_track_link">
+        <material>Gazebo/Black</material>
+        <mu1 value="1.5" />
+        <mu2 value="1.5" />
+    </gazebo>
+    <gazebo reference="right_track_link">
+        <material>Gazebo/Black</material>
+        <mu1 value="1.5" />
+        <mu2 value="1.5" />
+    </gazebo>
+    <gazebo reference="fr_flipper_link">
+        <material>Gazebo/DarkGrey</material>
+        <mu1 value="1.0" />
+        <mu2 value="1.0" />
+    </gazebo>
+    <gazebo reference="fl_flipper_link">
+        <material>Gazebo/DarkGrey</material>
+        <mu1 value="1.0" />
+        <mu2 value="1.0" />
+    </gazebo>
+    <gazebo reference="br_flipper_link">
+        <material>Gazebo/DarkGrey</material>
+        <mu1 value="1.0" />
+        <mu2 value="1.0" />
+    </gazebo>
+    <gazebo reference="bl_flipper_link">
+        <material>Gazebo/DarkGrey</material>
+        <mu1 value="1.0" />
+        <mu2 value="1.0" />
+    </gazebo>
+
+</robot> 
