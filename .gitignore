@@ -7,3 +7,7 @@ log/
 .vscode
 .idea
 *.sw?
+
+# 临时生成的tf树文件
+frames_*.gv
+frames_*.pdf
