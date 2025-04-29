@@ -7,8 +7,8 @@ from launch_ros.parameter_descriptions import ParameterValue
 
 def generate_launch_description():
     tracked_bot_path = get_package_share_path('tracked_bot_description')
-    default_model_path = tracked_bot_path / 'urdf/tracked_bot_flipper.urdf'
-    default_rviz_config_path = tracked_bot_path / 'rviz/flipper.rviz'
+    default_model_path = tracked_bot_path / 'urdf/tracked_bot.urdf'
+    default_rviz_config_path = tracked_bot_path / 'rviz/urdf.rviz'
 
     model_arg = DeclareLaunchArgument(
         name='model',
