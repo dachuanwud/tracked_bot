@@ -1,101 +1,134 @@
+<?xml version="1.0"?>
+<!-- 履带式机器人URDF模型文件 -->
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="tracked_bot">
 
-    <!-- Robot Parameters -->
+    <!-- ================ 机器人参数定义 ================ -->
+    <!-- 履带偏移量：履带中心到机器人中心的Y轴距离 -->
     <xacro:property name="track_y_offset" value="0.11" />
+    <!-- 底盘质量(kg) -->
     <xacro:property name="chassis_mass" value="6.5" />
+    <!-- 履带质量(kg) -->
     <xacro:property name="track_mass" value="1.5" />
     
-    <!-- Part Includes - Payload, Sensors, Etc.. -->
+    <!-- ================ 外部组件和传感器 ================ -->
+    <!-- 负载在Z轴上的偏移量(m) -->
     <xacro:property name="payload_z_offset" value="0.096" />
+    <!-- 包含负载的URDF文件 -->
     <xacro:include filename="$(find tracked_bot_description)/urdf/accessories/rover_dev_payload.urdf" />
 
-    <!-- Robot Definition -->
+    <!-- ================ 机器人主体结构定义 ================ -->
+    <!-- 基座坐标系：整个机器人的参考坐标系 -->
     <link name="base_link" />
 
+    <!-- 底盘链接：机器人的主体结构 -->
     <link name="chassis_link">
+        <!-- 视觉外观 -->
         <visual>
+            <!-- 位置和姿态：绕X轴旋转90度，绕Z轴旋转90度 -->
             <origin xyz="0 0 0" rpy="1.57 -0 1.57" />
             <geometry>
                 <mesh filename="file://$(find tracked_bot_description)/meshes/flipper_chassis.dae"/>
             </geometry>
         </visual>
+        <!-- 碰撞检测几何体 -->
         <collision>
             <origin xyz="0 0 0" rpy="1.57 -0 1.57" />
             <geometry>
                 <mesh filename="file://$(find tracked_bot_description)/meshes/flipper_chassis.dae"/>
             </geometry>
         </collision>
+        <!-- 惯性参数 -->
         <inertial>
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <mass value="${chassis_mass}" />
+            <!-- 惯性矩阵：考虑了底盘的不对称性 -->
             <inertia ixx="0.028" ixy="0.0" ixz="0.0" iyy="0.082" iyz="0.0" izz="0.103" />
         </inertial>
     </link>
 
+    <!-- 底盘与基座的连接：固定在基座上方5cm处 -->
     <joint name="base_to_chassis" type="fixed">
         <parent link="base_link"/>
         <child link="chassis_link"/>
         <origin xyz="0 0 0.05"/>
     </joint>
 
+    <!-- 左履带链接 -->
     <link name="left_track_link">
+        <!-- 视觉外观 -->
         <visual>
+            <!-- 位置和姿态调整，使履带正确安装 -->
             <origin xyz="0 0 0" rpy="1.57 3.1415 0" />
             <geometry>
                 <mesh filename="file://$(find tracked_bot_description)/meshes/flipper_track.dae"/>
             </geometry>
         </visual>
+        <!-- 碰撞检测几何体 -->
         <collision>
             <origin xyz="0 0 0" rpy="1.57 3.1415 0" />
             <geometry>
                 <mesh filename="file://$(find tracked_bot_description)/meshes/flipper_track.dae"/>
             </geometry>
         </collision>
+        <!-- 惯性参数 -->
         <inertial>
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <mass value="${track_mass}" />
+            <!-- 履带的惯性矩阵：假设质量均匀分布 -->
             <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01" />
         </inertial>
     </link>
+    <!-- 左履带与底盘的连接 -->
     <joint name="left_track_to_chassis" type="fixed">
         <parent link="chassis_link"/>
         <child link="left_track_link"/>
         <origin xyz="0 ${track_y_offset} 0"/>
     </joint>
 
+    <!-- 右履带链接 -->
     <link name="right_track_link">
+        <!-- 视觉外观 -->
         <visual>
             <origin xyz="0 0 0" rpy="1.57 3.1415 0" />
             <geometry>
                 <mesh filename="file://$(find tracked_bot_description)/meshes/flipper_track.dae"/>
             </geometry>
         </visual>
+        <!-- 碰撞检测几何体 -->
         <collision>
             <origin xyz="0 0 0" rpy="1.57 3.1415 0" />
             <geometry>
                 <mesh filename="file://$(find tracked_bot_description)/meshes/flipper_track.dae"/>
             </geometry>
         </collision>
+        <!-- 惯性参数 -->
         <inertial>
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <mass value="${track_mass}" />
+            <!-- 履带的惯性矩阵：假设质量均匀分布 -->
             <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01" />
         </inertial>
     </link>
+    <!-- 右履带与底盘的连接 -->
     <joint name="right_track_to_chassis" type="fixed">
         <parent link="chassis_link"/>
         <child link="right_track_link"/>
         <origin xyz="0 ${-track_y_offset} 0"/>
     </joint>
 
-    <!-- Gazebo Plugins -->
+    <!-- ================ Gazebo仿真配置 ================ -->
+    <!-- 差速驱动插件配置 -->
     <gazebo>
         <plugin name="ignition::gazebo::systems::DiffDrive" filename="ignition-gazebo-diff-drive-system">
+            <!-- 左右履带关节配置 -->
             <left_joint>left_track_to_chassis</left_joint>
             <right_joint>right_track_to_chassis</right_joint>
+            <!-- 运动学参数 -->
             <wheel_separation>0.22</wheel_separation>
             <wheel_radius>0.05</wheel_radius>
+            <!-- 里程计发布频率(Hz) -->
             <odom_publish_frequency>50</odom_publish_frequency>
+            <!-- ROS话题配置 -->
             <topic>/cmd_vel</topic>
             <odom_topic>/odom</odom_topic>
             <frame_id>odom</frame_id>
@@ -104,18 +137,22 @@
         </plugin>
     </gazebo>
 
+    <!-- 材质和物理属性配置 -->
+    <!-- 底盘材质 -->
     <gazebo reference="chassis_link">
         <material>Gazebo/Grey</material>
     </gazebo>
+    <!-- 左履带材质和摩擦系数 -->
     <gazebo reference="left_track_link">
         <material>Gazebo/Black</material>
-        <mu1 value="1.5" />
-        <mu2 value="1.5" />
+        <mu1 value="1.5" />  <!-- 静摩擦系数 -->
+        <mu2 value="1.5" />  <!-- 动摩擦系数 -->
     </gazebo>
+    <!-- 右履带材质和摩擦系数 -->
     <gazebo reference="right_track_link">
         <material>Gazebo/Black</material>
-        <mu1 value="1.5" />
-        <mu2 value="1.5" />
+        <mu1 value="1.5" />  <!-- 静摩擦系数 -->
+        <mu2 value="1.5" />  <!-- 动摩擦系数 -->
     </gazebo>
 
 </robot> 
