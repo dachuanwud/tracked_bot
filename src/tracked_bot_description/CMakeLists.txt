@@ -5,7 +5,7 @@ find_package(ament_cmake REQUIRED)
 
 # === 把资源目录复制到 install/share/${PROJECT_NAME}/ 下 ===
 install(
-  DIRECTORY launch urdf rviz meshes worlds
+  DIRECTORY launch urdf rviz meshes
   DESTINATION share/${PROJECT_NAME}
 )
 
